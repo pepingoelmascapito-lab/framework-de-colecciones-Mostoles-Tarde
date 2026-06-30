@@ -432,8 +432,9 @@ public class App {
 							Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(Persona::edad)
 				.reversed());  
-		
+		 System.out.println("solucion del ejercicio 2");
 		 
+		 personas.forEach(System.out::println);
 		 /**
 		  * Ejercicio # 3 del Lunes 29 de Junio
 		  * 
@@ -441,6 +442,10 @@ public class App {
 		  * del genero MUJER que nacieron en la segunda quincena del mes de su fecha de 
 		  * nacimiento.
 		  */
+		 
+		 
+		 
+		 
 		 
 		 
 		 
