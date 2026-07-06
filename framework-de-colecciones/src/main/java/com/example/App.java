@@ -7,55 +7,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-
 public class App {
 
 	public static void main(String[] args) {
-
-		/*
-		 * Operaciones de Agregado, para recorrer y operar con los elementos de una
-		 * coleccion
-		 * 
-		 * En el siguiente enlace se hace una breve introduccion a las Operaciones de
-		 * Agregado
-		 * https://docs.oracle.com/javase/tutorial/collections/interfaces/collection.
-		 * html
-		 * 
-		 * Y en el link siguiente ya se abordan con mas profundidad:
-		 * https://docs.oracle.com/javase/tutorial/collections/streams/index.html
-		 * 
-		 * Las Operaciones de Agregado implican convertir la coleccion en un flujo
-		 * (Stream) de elementos que comienzan a circular por una tuberia (pipeline),
-		 * que podemos entenderla como una linea de produccion, por ejemplo, una cadena
-		 * donde se rellenan latas de conserva, que en cada punto de la cadena se hace
-		 * una operacion diferente, sobre la lata de conserva, es decir, un operador la
-		 * rellena, otro le pone la etiqueta otro la cierra, otro la mete en una caja,
-		 * etc.
-		 * 
-		 * Concretamente, la tuberia es una secuencia de operaciones de agregado, es
-		 * decir, operaciones que agrupan los elementos que van circulando por la
-		 * tuberia para hacer algun tipo de operacion.
-		 * 
-		 * Especificamente, la tuberia son los metodos de la clase Stream, que tiene un
-		 * origen que puede ser una coleccion, un array, un socket de red, etc., tambien
-		 * tiene cero, una o varias operaciones intermedias y solamente una operacion
-		 * terminal, al final de la tuberia, que reducirá todos los elementos que van
-		 * pasando por la tuberia a un solo elemento, o a una nueva coleccion
-		 * 
-		 * Las Operaciones de Agregado no es una sintaxis bonita, sino el soporte de la
-		 * JVM que tienen detras estas operaciones es muy superior a todo lo que
-		 * anteriormente existia con los bucles explicitos (entiendase for clasico y
-		 * mejorado, while, do while, etc)
-		 */
 
 		Persona persona1 = Persona.builder().nombre("Maria").apellido1("lopez").apellido2("fernandes")
 				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(1985, Month.OCTOBER, 12))
@@ -84,88 +49,214 @@ public class App {
 		personas.add(persona4);
 		personas.add(persona5);
 
-		/* Se puede ordenar una coleccion a medida que se recorre, y no dejarla permanentemente
-		* ordenada como sucede con el metodo sort() de la clase Collections */
+		/**
+		 * ¿Que es una coleccion Map, que tambien se le llama un mapa? Es una interface
+		 * que relaciona claves con Valor en cada entrada del mapa, y las claves no
+		 * pueden repetirse
+		 * 
+		 * Se dice que un mapa (Map Interface) NO es una verdadera coleccion porque no
+		 * hereda de la interfaz Collection, pero puede ser tratada como una coleccion
+		 * si se utilizan las vistas de colecciones (Collections Views)
+		 */
 
-		// Ejemplo # 1. Ordenar la coleccion de persones mientras se recorre, segun el 
-		// el orden natural
-		
-		personas.stream()
-		.sorted()
-		.forEach(System.out::println);
-		
-		// Ejemplo # 2. Ordenar la coleccion de personas mientras se recorre por el salario
-		// de la persona
-		
-		personas.stream()
-		.sorted(Comparator.comparing(Persona::salario))
-		.forEach(System.out::println);
-		
-		
-		/* Ejercicio # 1 del martes 30 de Junio.
-		* 
-		* Ordenar el listado de personas, por salario de mayor a menor salario */
-		System.out.println("Ejercicio 1");
-		personas.stream()
-		    .sorted(Comparator.comparing(Persona::salario) .reversed())
-		    .forEach(System.out::println);
+		/*
+		 * Ejemplo de creacion de un Map, es decir, una coleccion que almacena parejas
+		 * de clave y valor, para ello vamos a contar la frecuencia de ocurrencia de
+		 * nombres que se reciben como argumentos de la aplicacion cuando se ejecuta
+		 */
 
-		/* Ejercicio # 2. Ordenar por Genero, primero y luego por salario, a medida que se
-		* recorre la coleccion de persona para mostrarla */
+		// Primero: Convertir el array de argumentos que recibe la aplicacion
+		// cuando se ejecuta, es decir, la variable args de tipo String[], que recibe
+		// como parametro el metodo main(), en una coleccion List
 
-		System.out.println("Ejercicio 2");
-		personas.stream()
-		    .sorted(
-		        Comparator.comparing(Persona::genero)
-		        .thenComparing(Persona::salario)
-		    )
-		    .forEach(System.out::println);
+		List<String> nombres = Arrays.asList(args);
+		// Comprobar si nombres posee todos los argumentos que recibe la aplicacion
+		// cuando se ejecuta
 
-		/* Ejercicio # 3. Mostrar la persona que tiene el mayor salario de todas las 
-		* personas. */
+		nombres.forEach(System.out::println);
 
-		System.out.println("Ejercicio 3");
-		personas.stream()
-		    .max(Comparator.comparing(Persona::salario))
-		    .ifPresent(System.out::println);
+		Map<String, Integer> m = new HashMap<String, Integer>();
+
+		/**
+		 * Una de las clases que implementan la interface Map es HashMap, que no permite
+		 * ordenar la claves del mapa, pero ofrece un alto rendimiento.
+		 * 
+		 * Si queremos ordenar las claves del mapa hay que utilizar un TreeMap que si
+		 * permite ordenamiento
+		 */
+
+		// ¿Que diferencia hay entre String (cadena de caracteres) y Stream (flujo) ?
+		// String es una clase que sirve como tipo de dato, cualquier variable de tipo
+		// String su valor tiene que estar entre comilla dobles
+		// String nombre = "Elida 22323@@ #";
+
+		Stream<String> flujoDeString = nombres.stream();
+
+		/***
+		 * A continuacion vamos a crear la coleccion mapa recorriendo la lista de
+		 * nombres con una sentencia for mejorada y comprobaremos, posteriormente, que
+		 * es mucho menos codigo si hacemos lo mismo con operaciones de agregado para
+		 * recorrer la coleccion de nombres
+		 * 
+		 */
+
+		for (String nombre : nombres) {
+			// comprobar si el nombre ya esta en el mapa m
+			// Comprobar si el nombre ya esta en el mapa m
+			// . Lo cual hacemos utilizando el metodo get
+			// que busca, en el mapa, el valor asociado a la clave
+			// que se le pasa como parametro, si encuentra la clave
+			// devuelve el valor asociado a la misma y de lo contrario
+			// devuelve null
+
+			Integer frecuanciaDeOcurreancia = m.get(nombre);
+			m.put(nombre, frecuanciaDeOcurreancia == null ? 1 : frecuanciaDeOcurreancia++);
+			// La sentencia vacia, es decir, el punto y coma que esta a continuacion
+			// el unico objetivo que tiene es que no se vaya el cursor al inicio del
+			// del bucle for y deje de ver el valor que tiene la variable
+			// frecuenciaDeOcurrencia.
+			// Solamente es necesario cuando se esta depurando el codigo
+
+			// int x = 4;
+
+		}
+
+		System.out.println("Mapa m resultante: ");
+		System.out.println(m);
+
+		/*
+		 * ¿Como se puede ordenar el mapa resultante, es decir, las claves del mapa
+		 * resultante?
+		 * 
+		 * Tener presente que si el mapa se ha construido a partir de la clase HashMap
+		 * no se puede ordenar de ninguna manera porque dicha clase no garantiza
+		 * ordenamiento.
+		 * 
+		 * Entonces. ¿Como hacer para mostrar el mapa ordenado por las claves? Insisto.
+		 * 
+		 * Rta. Crear un nuevo mapa, identico al desordenado, en cuanto a las claves y
+		 * valor de mapa, pero a partir de una clase TreeMap, que si permite
+		 * ordenamiento, y se copiaria todo el contenido del mapa desordenado para el
+		 * construido a partir del TreeMap
+		 */
+
+		/*
+		 * A un mapa no se le pueden aplicar los algoritmos, de ordenamiento por ejemplo
+		 * que estan implementados en el metodo sort() de la clase Collections, porque
+		 * una interface Map NO hereda de Collection
+		 */
+
+		// Lexicograficamente quiere decir de la A a la Z
+
+		Map<String, Integer> mapaOrdenadoLexicograficamente = new TreeMap<>();
+
+		// Lo unico que hay que hacer es copiar todas las entradas del mapa
+		// desordenado en el nuevo mapa
+
+		mapaOrdenadoLexicograficamente.putAll(m);
+
+		System.out.println("Mapa ordenado lexicograficamente: ");
+		System.out.println(mapaOrdenadoLexicograficamente);
+
+		/*
+		 * Ejercicio # 1 del Jueves 2 de Julio
+		 * 
+		 * Ordenar las claves del mapa m en orden alfabetico inverso
+		 */
+
+		// Solucion de Elida
+
+		Map<String, Integer> mapaOrdenadoAlfabeticamenteInverso = new TreeMap<>(Comparator.reverseOrder());
+		mapaOrdenadoAlfabeticamenteInverso.putAll(m);
+		System.out.println("Mapa ordenado alfabeticamente inverso: ");
+		System.out.println(mapaOrdenadoAlfabeticamenteInverso);
+
+		/*
+		 * El mapa m se puede obtener en una sola sentencia, utilizando OPERACIONES DE
+		 * AGREGADO.
+		 * 
+		 * Los mapas, por lo general, se obtienen a partir de recorrer una lista (List)
+		 * o un Set, raramente utilizando el metodo put
+		 * 
+		 * A modo de ejemplo, vamos a obtener nuevamente el mapa m a partir de recorrer
+		 * la lista con los nombres recibidos como argumentos cuando se lanza la
+		 * aplicacion y le vamos a llamar a dicho mapa mm
+		 */
+
+		Map<String, Long> mm = nombres.stream().collect(Collectors.groupingBy(n -> n, Collectors.counting()));
+
+		System.out.println("El mapa mm es exactamente igual que el m, pero obtenido con" + "mucho menos esfuerzo: ");
+
+		System.out.println(m);
+		System.out.println(mm);
+
+		/*
+		 * CREACION DE Colecciones Map Interface (Mapas) a partir de recorrer una lista
+		 * de elementos
+		 */
+
+		/*
+		 * Ejemplo # 1 del Lunes 6 de Julio.
+		 * 
+		 * Recorrer la lista de personas y obtener una nueva coleccion que agrupe total
+		 * de personas por genero
+		 */
+
+		// Para la solucion, lo primero a tener en cuenta es tipo de datos que va a ir
+		// en la clave del mapa y en el valor
+
+		Map<Genero, Long> personasAgrupadasPorGenero = personas.stream()
+				.collect(Collectors.groupingBy(persona -> persona.genero(), Collectors.counting()));
+
+		/*
+		 * La creacion del mapa anterior esta bien, pero se puede mejorar ¿Como?
+		 *
+		 * Rta. Substituir la expresion lambda que se pasa al metodo groupingBy por el
+		 * metodo genero por referencia
+		 */
+		Map<Genero, Long> personasAgrupadasPorGenero2 = personas.stream()
+				.collect(Collectors.groupingBy(Persona::genero, Collectors.counting()));
+
+		/*
+		 * Ejemplo # 2 del Lunes 6 de Julio.
+		 *
+		 * Recorrer la coleccion de personas y obtener una nueva coleccion que agrupe
+		 * personas por Genero
+		 */
+
+		Map<Genero, List<Persona>> personasAgrupadasPorGenero3 = personas.stream()
+				.collect(Collectors.groupingBy(Persona::genero));
+
+		System.out.println(personasAgrupadasPorGenero3);
+
+		/*
+		 * Ejemplo # 3.
+		 * 
+		 * Recorrer la lista de personas y obtener una nueva colecion que agrupe
+		 * personas por genero y edad
+		 */
+
+		Map<Genero, Map<Long, List<Persona>>> personasPorGeneroYEdad = personas.stream()
+				.collect(Collectors.groupingBy(Persona::genero, Collectors.groupingBy(Persona::edad)));
+
+		/*
+		 * Ejemplo # 4
+		 * 
+		 * Recorrer la lista de personas y obtener una nueva coleccion que agrupe
+		 * nombres de persona, sin duplicados, agrupados por Genero y edad
+		 */
+
 		
-	
-        /* Ejercicio # 4.
-         *
-         * Recuperar la persona del genero MUJER, que tenga el menor salario*/
-		System.out.println("Ejercicio 4");
-		Optional<Persona> optionalDePersona = personas.stream()
-		        .filter(p -> p.genero().equals(Genero.MUJER))
-		        .min(Comparator.comparing(Persona::salario));
-
-		if (optionalDePersona.isPresent()) {
-
-			// Quiere decir que en la "cajita" del Optional esta presente la persona
-			// que es del genero MUJER y que tiene el menor salario
-
-			Persona personaMujerConMenorSalario = optionalDePersona.get();
-
-			System.out.println("Persona Mujer con el menor salario " + 
-			personaMujerConMenorSalario);
-			}
+System.out.println("ejercicio 2");
+		Map<Genero, Map<Long, Set<String>>> personasPorGeneroYEdad2 = personas.stream()
+				.collect(Collectors.groupingBy(Persona::genero,
+						Collectors.groupingBy(Persona::edad,
+								
+Collectors.mapping(Persona::nombre, Collectors.toSet()))));
 		
-		
-		
-        
-        
+		System.out.println(personasPorGeneroYEdad2);
+
+		;
+
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
